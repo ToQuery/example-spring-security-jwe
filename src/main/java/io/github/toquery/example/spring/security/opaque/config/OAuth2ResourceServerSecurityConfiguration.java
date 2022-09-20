@@ -13,40 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.toquery.example.spring.security.jwe;
+package io.github.toquery.example.spring.security.opaque.config;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.JWEDecryptionKeySelector;
-import com.nimbusds.jose.proc.JWEKeySelector;
-import com.nimbusds.jose.proc.JWSKeySelector;
-import com.nimbusds.jose.proc.JWSVerificationKeySelector;
-import com.nimbusds.jose.proc.SecurityContext;
-import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import com.nimbusds.jwt.proc.JWTProcessor;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.net.URL;
-import java.security.interfaces.RSAPrivateCrtKey;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * OAuth Resource Server Configuration.
@@ -65,21 +43,20 @@ public class OAuth2ResourceServerSecurityConfiguration {
 
     private final OAuth2ResourceServerProperties auth2ResourceServerProperties;
 
-    private final JweProperties jweProperties;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // @formatter:off
         http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .antMatchers("/message/**").hasAuthority("SCOPE_message:read")
+                        .antMatchers("/message/**").hasAuthority("SCOPE_read")
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(withDefaults()));
-        // @formatter:on
+                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken)
+        ;
         return http.build();
     }
 
+    /*
     @Bean
     JwtDecoder jwtDecoder() {
         return new NimbusJwtDecoder(jwtProcessor());
@@ -103,10 +80,11 @@ public class OAuth2ResourceServerSecurityConfiguration {
     }
 
     private RSAKey rsaKey() {
-        RSAPrivateCrtKey crtKey = (RSAPrivateCrtKey) jweProperties.getJweKey();
+        RSAPrivateCrtKey crtKey = (RSAPrivateCrtKey) authAuthorizationProperties.getPrivateKey();
         Base64URL n = Base64URL.encode(crtKey.getModulus());
         Base64URL e = Base64URL.encode(crtKey.getPublicExponent());
-        return new RSAKey.Builder(n, e).privateKey(jweProperties.getJweKey()).keyUse(KeyUse.ENCRYPTION).build();
+        return new RSAKey.Builder(n, e).privateKey(authAuthorizationProperties.getPrivateKey()).keyUse(KeyUse.ENCRYPTION).build();
     }
+    */
 
 }

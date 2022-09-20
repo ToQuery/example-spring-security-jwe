@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.toquery.example.spring.security.jwe;
+package io.github.toquery.example.spring.security.opaque.rest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,11 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Josh Cummings
  */
 @RestController
-public class OAuth2ResourceServerController {
+public class OAuth2ResourceServerRest {
 
 	@GetMapping("/")
-	public String index(@AuthenticationPrincipal Jwt jwt) {
-		return String.format("Hello, %s!", jwt.getSubject());
+	public String index(@AuthenticationPrincipal OAuth2IntrospectionAuthenticatedPrincipal auth2IntrospectionAuthenticatedPrincipal, BearerTokenAuthentication authentication) {
+		return String.format("Hello, %s and %s !", auth2IntrospectionAuthenticatedPrincipal.getName(), authentication.getName());
 	}
 
 	@GetMapping("/message")

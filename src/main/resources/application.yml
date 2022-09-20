@@ -22,9 +22,7 @@ spring:
   security:
     oauth2:
       resourceserver:
-        jwt:
-          jwk-set-uri: http://localhost:8080/oauth2/jwks
-
-app:
-  jwe:
-    jwe-key: classpath:jwts/rsa_private.isa
+        opaquetoken:
+          client-id: example-spring-security-jwt
+          client-secret: example-spring-security-jwt-secret
+          introspection-uri: http://localhost:8080/oauth2/introspect
