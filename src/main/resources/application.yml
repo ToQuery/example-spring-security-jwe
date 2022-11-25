@@ -55,6 +55,6 @@ spring:
     oauth2:
       resourceserver:
         opaquetoken:
-          client-id: example-spring-security-jwt
-          client-secret: example-spring-security-jwt-secret
+          client-id: example-spring-security-opaque
+          client-secret: example-spring-security-opaque-secret
           introspection-uri: http://localhost:8080/oauth2/introspect
